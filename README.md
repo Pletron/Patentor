@@ -3,4 +3,4 @@ Extracts patents from downloaded XML file provided by Orbis [http://www.bvdinfo.
 
 
 # Usage
-`python patents_to_sql.py -i downloaded.xml -o database.sql`
+`python patents_to_sql.py -i example_file.xml -o database.sql`
