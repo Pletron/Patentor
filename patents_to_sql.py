@@ -39,9 +39,9 @@ def main(argv):
 	PUB_DATE = 3
 	PUB_OWNERS = 5
 	PUB_IPC = 4
-	NR_CITED = 5
+	NR_CITED = 7
 	NR_CITINGS = 6
-	ABSTRACT = 7
+	ABSTRACT = 8
 
 
 	pCounter = 1
@@ -63,7 +63,7 @@ def main(argv):
 	  '\t`pub_nr` varchar(50) DEFAULT NULL,\n' +
 	  '\t`granted` varchar(3) DEFAULT NULL,\n' +
 	  '\t`pub_date` datetime DEFAULT NULL,\n' +
-	  '\t`current_owner` varchar(150) DEFAULT NULL\n' +
+	  '\t`current_owner` varchar(150) DEFAULT NULL,\n' +
 	  '\t`nr_citings` int(11) DEFAULT NULL,\n' +
 	  '\t`nr_cited` int(11) DEFAULT NULL,\n' +
 	  '\t`abstract` varchar(256) DEFAULT NULL\n' +
@@ -113,7 +113,12 @@ def main(argv):
 			ipc_relation_queries.append('INSERT INTO `ipc_relation` (`pid`, `iid`) VALUES (%d, %d);' % (pCounter, int(ipclist.index(ipc.text.encode('utf-8'))+1)))
 
 
-		patent_queries.append('INSERT INTO `patents` (`pid`, `pub_title`, `pub_nr`, `granted`, `pub_date`, `current_owner`, `nr_citings`, `nr_cited`, `abstract`) VALUES (%d, \'%s\', \'%s\', \'%s\', \'%s\', \'%s\');' % (pCounter, child[PUB_TITLE].text.encode('utf-8').replace('\'','\\\''), child[PUB_ID].text.encode('utf-8'), child[GRANTED].text.encode('utf-8'), datetime.strptime(child[PUB_DATE].text.encode('utf-8'), "%Y/%m/%d"), owners, child[NR_CITINGS], child[NR_CITED], child[ABSTRACT]))
+		if child[ABSTRACT].text is not None:
+			abstract = child[ABSTRACT].text.encode('utf-8').replace('\\','\\\\').replace('\'','\\\'')
+		else:
+			abstract = ''
+
+		patent_queries.append('INSERT INTO `patents` (`pid`, `pub_title`, `pub_nr`, `granted`, `pub_date`, `current_owner`, `nr_citings`, `nr_cited`, `abstract`) VALUES (%d, \'%s\', \'%s\', \'%s\', \'%s\', \'%s\', %d, %d, \'%s\');' % (pCounter, child[PUB_TITLE].text.encode('utf-8').replace('\'','\\\''), child[PUB_ID].text.encode('utf-8'), child[GRANTED].text.encode('utf-8'), datetime.strptime(child[PUB_DATE].text.encode('utf-8'), "%Y/%m/%d"), owners, int(child[NR_CITINGS].text.encode('utf-8').replace('n.a.','0')), int(child[NR_CITED].text.encode('utf-8').replace('n.a.','0')), abstract))
 
 		pCounter+=1
 
